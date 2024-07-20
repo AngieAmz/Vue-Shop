@@ -24,7 +24,7 @@
         </v-row>
       </v-container>
       <a
-        href="https://wa.me/YOUR_PHONE_NUMBER"
+        href="https://wa.me/+18096988504"
         class="whatsapp-button"
         target="_blank"
       >
