@@ -1,52 +1,68 @@
-<template>
-  <v-dialog
-    :model-value="isDialogOpen"
-    @update:model-value="updateDialogVisibility"
-    max-width="500"
-  >
-    <template>
-      <v-card>
-        <v-card-title>{{ product.title }}</v-card-title>
-        <v-card-text>
-          <v-img :src="product.image" height="200px" fit></v-img>
-          <p>{{ product.description }}</p>
-          <p>Price: ${{ product.price }}</p>
-          <!-- <p>Rating: {{ product.rating.rate }}/5 ({{ product.rating.count }} reviews)</p> -->
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text="Close" @click="closeDialog"></v-btn>
-        </v-card-actions>
-      </v-card>
-    </template>
-  </v-dialog>
-</template>
-
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({
-  product: {
-    type: Object,
-    required: true
-  },
-  isDialogOpen: {
-    type: Boolean,
-    required: true
-  }
-})
+const dialog = ref(false)
+const product = ref({})
 
-console.log(product.value)
-
-const product = ref(props.product)
-
-const emits = defineEmits(['update:isDialogOpen'])
-
-const closeDialog = () => {
-  emits('update:isDialogOpen', false)
+function openDialog(item) {
+  dialog.value = true
+  product.value = item
 }
 
-const updateDialogVisibility = (value) => {
-  emits('update:isDialogOpen', value)
+function closeDialog() {
+  dialog.value = false
 }
+
+defineExpose({ openDialog })
 </script>
+
+<template>
+  <v-dialog v-model="dialog" max-width="800px">
+    <v-card>
+      <v-card-actions>
+        <v-spacer> <v-card-title class="headline"> Product Details </v-card-title></v-spacer>
+        <v-btn color="green darken-1" text @click="closeDialog">
+          <font-awesome-icon icon="fa-solid fa-x" /></v-btn>
+      </v-card-actions>
+      <v-img height="200px" :src="product.image" fit></v-img>
+      <v-card-text class="price"><span>$</span>{{ product.price }}</v-card-text>
+      <v-card-text class="title-container">
+        <v-card-text class="title">
+          {{ product.title }}
+        </v-card-text>
+        <v-card-text style="padding: 0;">
+          <font-awesome-icon icon="fa-solid fa-star" style="color: orange" />
+          {{ product.rating.rate }} ({{ product.rating.count }}+)
+        </v-card-text>
+      </v-card-text>
+
+      <v-card-text style="padding: 5px 20px 15px; text-align: justify;">{{ product.description }}</v-card-text>
+    </v-card>
+  </v-dialog>
+</template>
+
+<style scoped>
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0 10px;
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 8px !important;
+}
+
+.price {
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 2px 20px !important;
+}
+
+.price span {
+  font-size: 11px;
+  font-weight: bold;
+}
+</style>

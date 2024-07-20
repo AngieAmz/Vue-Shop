@@ -2,9 +2,16 @@
 import axios from 'axios'
 import { ref } from 'vue'
 import ProductCard from '../products/ProductCard.vue'
+import ProductDialog from '@/components/products/ProductDialog.vue'
+import TitleComponent from '../TitleComponent.vue'
 
 const loading = ref(false)
 const products = ref([])
+const productDialog = ref(null)
+
+const showDialog = (item) => {
+  productDialog.value.openDialog(item)
+}
 
 const getProducts = async () => {
   try {
@@ -31,11 +38,9 @@ getProducts()
 
 <template>
   <div class="content">
-    <div class="title">
-      <h3 style="font-weight: bold">BEST-SELLERS</h3>
-      <v-divider length="50" :thickness="3" class="divider border-opacity-100" />
-    </div>
-    <ProductCard :products="products" />
+    <TitleComponent title="BEST-SELLERS" />
+    <ProductCard :products="products" @open-dialog="showDialog" />
+    <ProductDialog ref="productDialog" />
   </div>
 </template>
 

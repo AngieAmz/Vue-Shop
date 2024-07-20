@@ -7,30 +7,35 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-//fontawesome icons
-/* fontawesome core */
+// FontAwesome icons
 import { library } from '@fortawesome/fontawesome-svg-core'
-
-/* font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-/* icons */
 import { fas } from '@fortawesome/free-solid-svg-icons'
-
 import { far } from '@fortawesome/free-regular-svg-icons'
 
-/* add icons to the library */
+// Add icons to the library
 library.add(fas, far)
 
 import App from './App.vue'
-
 import router from './router'
 
-const app = createApp(App)
 const vuetify = createVuetify({
   components,
-  directives
+  directives,
+  icons: {
+    defaultSet: 'fa',
+    sets: {
+      fa: {
+        component: FontAwesomeIcon,
+        props: {
+          icon: ['fa', 'search'],
+        },
+      },
+    },
+  },
 })
+
+const app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 app.use(vuetify)

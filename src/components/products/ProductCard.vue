@@ -1,4 +1,6 @@
 <script setup>
+import { ref, computed } from 'vue'
+
 const props = defineProps({
   products: {
     type: Array,
@@ -6,10 +8,10 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['open-dialog'])
+const emit = defineEmits(['open-dialog'])
 
 const openDialog = (item) => {
-  emits('open-dialog', item)
+  emit('open-dialog', item)
 }
 
 const getStarIcon = (index, rating) => {
@@ -21,30 +23,58 @@ const getStarIcon = (index, rating) => {
     return 'fa-regular fa-star'
   }
 }
+
+const currentPage = ref(1)
+const itemsPerPage = 6
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return props.products.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(props.products.length / itemsPerPage)
+})
+
+const handlePageChange = (page) => {
+  currentPage.value = page
+}
 </script>
 
 <template>
-  <v-row class="container">
-    <v-col cols="12" md="4" v-for="(item, index) in props.products" :key="index">
-      <v-card class="card" @click="openDialog(item)">
-        <v-img height="200px" :src="item.image" fit></v-img>
-        <v-card-title>
-          {{ item.title }}
-        </v-card-title>
-        <v-card-subtitle>
-          <i>
-            <font-awesome-icon
-              v-for="star in 5"
-              :key="star"
-              :icon="getStarIcon(star, item.rating.rate)"
-            />
-          </i>
-          {{ item.rating.rate }}/5 ({{ item.rating.count }})
-        </v-card-subtitle>
-        <v-card-text class="price">${{ item.price }}</v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div>
+    <v-row class="container">
+      <v-col cols="12" md="4" v-for="(item, index) in paginatedProducts" :key="index">
+        <v-card class="card" @click="openDialog(item)">
+          <v-img height="200px" :src="item.image" fit></v-img>
+          <v-card-title>
+            {{ item.title }}
+          </v-card-title>
+          <v-card-subtitle>
+            <i>
+              <font-awesome-icon
+                v-for="star in 5"
+                :key="star"
+                :icon="getStarIcon(star, item.rating.rate)"
+              />
+            </i>
+            {{ item.rating.rate }}/5
+          </v-card-subtitle>
+          <v-card-text class="price">${{ item.price }}</v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-pagination
+      v-if="totalPages > 1"
+      v-model="currentPage"
+      :length="totalPages"
+      @update:model-value="handlePageChange"
+      class="pagination"
+      :prev-icon="'fa fa-chevron-left'"
+      :next-icon="'fa fa-chevron-right'"
+    ></v-pagination>
+  </div>
 </template>
 
 <style scoped>
@@ -69,5 +99,10 @@ const getStarIcon = (index, rating) => {
 
 .card i {
   color: orange;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 </style>
